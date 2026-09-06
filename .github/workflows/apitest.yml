@@ -26,7 +26,7 @@ jobs:
 
     - name: Run Newman API Tests
       run: |
-        newman run ClearrCut.postman_collection.json -e "Clear cut dev.postman_environment.json" --folder "Customers" --env-var "customer_url=https://dev.clearrcut.com/api/customer/v1" --reporters cli,htmlextra
+        newman run ClearrCut.postman_collection.json --folder "Customers" --env-var "customer_url=https://dev.clearrcut.com/api/customer/v1" --reporters cli,htmlextra
 
     - name: Upload HTML Report
       uses: actions/upload-artifact@v4

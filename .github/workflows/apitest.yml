@@ -1,0 +1,35 @@
+name: ClearCut API Automation CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install Newman and htmlextra reporter
+      run: |
+        npm install -g newman
+        npm install -g newman-reporter-htmlextra
+
+    - name: Run Newman API Tests
+      run: |
+        newman run ClearrCut.postman_collection.json -e "Clear cut dev.postman_environment.json" --folder "Customers" --env-var "customer_url=https://dev.clearrcut.com/api/customer/v1" --reporters cli,htmlextra
+
+    - name: Upload HTML Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: API-Test-Report
+        path: newman/*.html

@@ -7548,7 +7548,7 @@
                   "bearer": [
                     {
                       "key": "token",
-                      "value": "{{serviceman_token}}",
+                      "value": "{{customer_token}}",
                       "type": "string"
                     }
                   ]
@@ -7557,8 +7557,7 @@
                 "header": [
                   {
                     "key": "Accept",
-                    "value": "application/json",
-                    "type": "text"
+                    "value": "application/json"
                   }
                 ],
                 "body": {
@@ -7571,9 +7570,9 @@
                   }
                 },
                 "url": {
-                  "raw": "{{serviceman_url}}/wallet/add-fund-to-wallet",
+                  "raw": "{{customer_url}}/wallet/add-fund-to-wallet",
                   "host": [
-                    "{{serviceman_url}}"
+                    "{{customer_url}}"
                   ],
                   "path": [
                     "wallet",

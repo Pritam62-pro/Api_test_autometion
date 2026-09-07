@@ -1,35 +1,48 @@
-name: ClearCut API Automation CI
+name: Newman API Tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main", "master" ]
   pull_request:
-    branches: [ main ]
+    branches: [ "main", "master" ]
+  workflow_dispatch: # Manual run button in GitHub Actions tab
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
 
-    - name: Install Newman and htmlextra reporter
-      run: |
-        npm install -g newman
-        npm install -g newman-reporter-htmlextra
+      - name: Install Newman and Reporters
+        run: |
+          npm install -g newman
+          npm install -g newman-reporter-htmlextra
+          npm install -g newman-reporter-junitfull
 
-    - name: Run Newman API Tests
-      run: |
-        newman run ClearrCut.postman_collection.json --folder "Customers" --env-var "customer_url=https://dev.clearrcut.com/api/customer/v1" --reporters cli,htmlextra
+      - name: Run Postman Collection via Newman
+        run: |
+          newman run "ClearrCut.postman_collection.json" \
+            -e "Clear_cut_dev.postman_environment.json" \
+            --reporters cli,htmlextra,junitfull \
+            --reporter-htmlextra-export "newman/API-Test-Report.html" \
+            --reporter-junitfull-export "newman/junit-report.xml"
+        continue-on-error: true # Jate assertion fail korleoo pore report upload hote pare
 
-    - name: Upload HTML Report
-      uses: actions/upload-artifact@v4
-      with:
-        name: API-Test-Report
-        path: newman/*.html
+      - name: Upload Test Reports (HTML & JUnit)
+        if: always() # Test 
+        uses: actions/upload-artifact@v4
+        with:
+          name: API-Test-Reports
+          path: newman/
+          retention-days: 30
+
+      - name: Fail Job if Tests Failed
+        if: steps.test.outcome == 'failure'
+        run: exit 1

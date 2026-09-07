@@ -28,7 +28,7 @@ jobs:
       - name: Run Postman Collection via Newman
         run: |
           newman run "ClearrCut.postman_collection.json" \
-            -e "Clear_cut_dev.postman_environment.json" \
+            -e "Clear cut dev.postman_environment.json" \
             --reporters cli,htmlextra \
             --reporter-htmlextra-export "newman/API-Test-Report.html"
 

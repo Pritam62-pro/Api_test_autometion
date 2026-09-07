@@ -8721,6 +8721,17 @@
             }
           ]
         }
+      ],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 1. Common check: Response-ta valid JSON object kina\r\npm.test(\"Response is a valid JSON object - [\" + pm.info.requestName + \"]\", function () {\r\n    var jsonData = pm.response.json();\r\n    pm.expect(jsonData).to.be.an('object');\r\n});\r\n\r\n// 2. Dynamic Status Code Check based on Request Method\r\nvar requestMethod = pm.request.method;\r\n\r\nif (requestMethod === \"GET\") {\r\n    // GET request-er jonno normally 200 OK asha uchit\r\n    pm.test(\"GET Status code is 200 - [\" + pm.info.requestName + \"]\", function () {\r\n        pm.response.to.have.status(200);\r\n    });\r\n} \r\nelse if (requestMethod === \"POST\") {\r\n    // POST request-er jonno 200 (Success) ba 201 (Created) hote pare\r\n    pm.test(\"POST Status code is 200 or 201 - [\" + pm.info.requestName + \"]\", function () {\r\n        pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r\n    });\r\n}\r\nelse if (requestMethod === \"PUT\" || requestMethod === \"PATCH\") {\r\n    pm.test(\"Update Status code is 200 - [\" + pm.info.requestName + \"]\", function () {\r\n        pm.response.to.have.status(200);\r\n    });\r\n}\r\nelse if (requestMethod === \"DELETE\") {\r\n    pm.test(\"Delete Status code is 200 or 204 - [\" + pm.info.requestName + \"]\", function () {\r\n        pm.expect(pm.response.code).to.be.oneOf([200, 204]);\r\n    });\r\n}"
+            ]
+          }
+        }
       ]
     },
     {

@@ -15,13 +15,23 @@
           "item": [
             {
               "name": "Login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "// 1. Status Code Check (200 OK)\r\npm.test(\"Login successful and status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\n// 2. JSON Response Format Check\r\npm.test(\"Response body is a valid JSON object\", function () {\r\n    var jsonData = pm.response.json();\r\n    pm.expect(jsonData).to.be.an('object');\r\n});"
+                    ]
+                  }
+                }
+              ],
               "request": {
                 "method": "POST",
                 "header": [
                   {
                     "key": "Accept",
-                    "value": "application/json",
-                    "type": "text"
+                    "value": "application/json"
                   }
                 ],
                 "body": {
@@ -55,7 +65,7 @@
                   "script": {
                     "type": "text/javascript",
                     "exec": [
-                      "var jsonData = pm.response.json();\r\nif (jsonData.token) {\r\n    pm.environment.set(\"customerToken\", jsonData.token);\r\n}"
+                      "// 1. Status Code Check (200 or 201)\r\npm.test(\"OTP Verified and status code is 200 or 201\", function () {\r\n    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r\n});\r\n\r\n// 2. Extract and Save Token for GitHub Actions\r\npm.test(\"Token is present and saved dynamically\", function () {\r\n    var jsonData = pm.response.json();\r\n    \r\n    // API response theke token khunje ber kora (direct ba data object-er vitor)\r\n    var extractedToken = jsonData.token || (jsonData.data && jsonData.data.token) || jsonData.customerToken;\r\n    \r\n    // Token pawa geche kina tar assertion\r\n    pm.expect(extractedToken).to.be.a('string', \"Token is missing in the API response!\");\r\n    \r\n    // GitHub Actions ebong Newman-er jonno token environment variable-e save kora\r\n    pm.environment.set(\"customerToken\", extractedToken);\r\n    pm.collectionVariables.set(\"customerToken\", extractedToken); // Backup hisebe\r\n    \r\n    console.log(\"Success! Token saved for CI/CD pipeline: \" + extractedToken);\r\n});"
                     ]
                   }
                 }

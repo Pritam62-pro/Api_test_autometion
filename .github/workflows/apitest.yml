@@ -5,7 +5,7 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
-  workflow_dispatch: # Manual run button
+  workflow_dispatch:
 
 jobs:
   test:
@@ -27,11 +27,16 @@ jobs:
 
     - name: Run Newman API Tests
       run: |
-        newman run ClearrCut.postman_collection.json --folder "Customers" --env-var "customer_url=https://dev.clearrcut.com/api/customer/v1" --reporters cli,htmlextra
+        mkdir -p newman
+        newman run ClearrCut.postman_collection.json \
+          --folder "Customers" \
+          --env-var "customer_url=https://dev.clearrcut.com/api/customer/v1" \
+          --reporters cli,htmlextra \
+          --reporter-htmlextra-export "newman/API-Test-Report.html"
 
     - name: Upload HTML Report
-      if: always() # Test pass hok ba fail, report upload hobei
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: API-Test-Report
-        path: newman/*.html
+        path: newman/API-Test-Report.html

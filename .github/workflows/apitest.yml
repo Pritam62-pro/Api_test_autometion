@@ -1,40 +1,37 @@
-name: Newman API Tests
+name: ClearCut API Automation CI
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ "main", "master" ]
-  workflow_dispatch:
+    branches: [ main, master ]
+  workflow_dispatch: # Manual run button
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
 
-      - name: Install Newman and HTML Extra Reporter
-        run: |
-          npm install -g newman
-          npm install -g newman-reporter-htmlextra
+    - name: Install Newman and htmlextra reporter
+      run: |
+        npm install -g newman
+        npm install -g newman-reporter-htmlextra
 
-      - name: Run Postman Collection via Newman
-        run: |
-          newman run "ClearrCut.postman_collection.json" \
-            --reporters cli,htmlextra \
-            --reporter-htmlextra-export "newman/API-Test-Report.html"
+    - name: Run Newman API Tests
+      run: |
+        newman run ClearrCut.postman_collection.json --folder "Customers" --env-var "customer_url=https://dev.clearrcut.com/api/customer/v1" --reporters cli,htmlextra
 
-      - name: Upload Test Report (HTML)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: API-Test-Report
-          path: newman/API-Test-Report.html
-          retention-days: 30
+    - name: Upload HTML Report
+      if: always() # Test pass hok ba fail, report upload hobei
+      uses: actions/upload-artifact@v4
+      with:
+        name: API-Test-Report
+        path: newman/*.html
